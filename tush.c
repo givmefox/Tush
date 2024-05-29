@@ -1,63 +1,39 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#define MAX_ARGS 64
-
-void execute_command(char *cmd) {
-    char *args[MAX_ARGS];
-    int i = 0;
-
-    // 토큰화하여 명령어와 인자를 분리합니다.
-    args[i] = strtok(cmd, " \t\n");
-    while (args[i] != NULL && i < MAX_ARGS - 1) {
-        i++;
-        args[i] = strtok(NULL, " \t\n");
-    }
-    args[i] = NULL;  // 인자 리스트의 끝을 NULL로 설정합니다.
-
-    // 자식 프로세스를 생성하여 명령어를 실행합니다.
-    pid_t pid = fork();
-    if (pid < 0) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    } else if (pid == 0) {
-        // 자식 프로세스
-        execvp(args[0], args);
-        perror("execvp");
-        exit(EXIT_FAILURE);
-    } else {
-        // 부모 프로세스
-        int status;
-        if (waitpid(pid, &status, 0) == -1) {
-            perror("waitpid");
-        }
-    }
-}
-
 int main() {
-    char *line = NULL;
-    size_t len = 0;
+    char *cmdline = NULL; // 명령어 입력 저장할 배열
+    size_t len = 0;     //입력 버퍼 길이
+    char *argv[MAXARGS]; // 명령어 인자 저장할 배열
+    int background; // bg 실행 여부 저장할 변수
+    char *input_file = NULL, *output_file = NULL, *error_file = NULL;
+
+    signal(SIGINT, handle_signal);
+    setup_environment(); // 환경 변수 설정
 
     while (1) {
-        printf("> ");
-        if (getline(&line, &len, stdin) == -1) {
-            perror("getline");
-            break;
+        background = FOREGROUND; // 기본 실행 = fg 설정
+        input_file = output_file = error_file = NULL; // 리다이렉션 파일 초기화
+
+        printf("prompt> "); // 프롬프트 출력
+        if (getline(&cmdline, &len, stdin) == -1) { // getline()으로 명령어 읽기
+            break; // 널 체크 (EOF)
         }
 
-        // 종료 명령어 처리
-        if (strcmp(line, "exit\n") == 0) {
-            break;
+        if (cmdline[strlen(cmdline) - 1] == '\n') {
+            cmdline[strlen(cmdline) - 1] = '\0'; // 마지막 자리 개행 문자 제거 & 널 값 삽입
         }
 
-        execute_command(line);
+        if (strcmp(cmdline, "exit") == 0) {
+            break; // exit 입력 시 루프 종료
+        }
+
+        process_input(cmdline, argv, &background, &input_file, &output_file, &error_file); // 입력 처리 및 명령어 파싱
+
+        if (argv[0] == NULL) {
+            continue; // 입력된 명령어 없을 시 계속 반복
+        }
+
+        execute_command(argv, background, input_file, output_file, error_file); // 명령어 실행
     }
 
-    free(line);
+    free(cmdline);
     return 0;
 }
-

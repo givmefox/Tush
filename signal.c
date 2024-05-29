@@ -1,3 +1,5 @@
+#include "tush.h"
+
 void handle_signal(int sig) {
     if (sig == SIGINT) {
         printf("\nType 'exit' to quit the shell.\n");

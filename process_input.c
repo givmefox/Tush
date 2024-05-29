@@ -1,3 +1,5 @@
+#include "tush.h"
+
 void process_input(char *cmdline, char **argv, int *background, char **input_file, char **output_file, char **error_file) {
     // 리다이렉션 처리
     char *input_redirect = strchr(cmdline, '<');

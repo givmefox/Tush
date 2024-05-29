@@ -1,3 +1,5 @@
+#include "tush.h"
+
 void execute_command(char **argv, int background, char *input_file, char *output_file, char *error_file) {
     if (access(argv[0], F_OK) != 0 && !is_absolute_path(argv[0])) {
         char *path_env = getenv("PATH");

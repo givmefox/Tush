@@ -1,3 +1,5 @@
+#include "tush.h"
+
 void redirect_io(char *input_file, char *output_file, char *error_file) {
     if (input_file) {
         int fd = open(input_file, O_RDONLY);

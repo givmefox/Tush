@@ -1,3 +1,5 @@
+#include "tush.h"
+
 void parse_command(char *cmdline, char **argv, int *background) {
     char *token;
     int argc = 0;

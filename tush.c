@@ -1,3 +1,5 @@
+#include "tush.h"
+
 int main() {
     char *cmdline = NULL; // 명령어 입력 저장할 배열
     size_t len = 0;     //입력 버퍼 길이

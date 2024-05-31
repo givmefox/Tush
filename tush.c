@@ -11,23 +11,21 @@ int main() {
     setup_environment(); // 환경 변수 설정
 
     while (1) {
-        background = FOREGROUND; // 기본 실행 = fg 설정
+        background = FOREGROUND; // 기본 실행 foreground
         input_file = output_file = error_file = NULL; // 리다이렉션 파일 초기화
 
         printf("prompt> "); // 프롬프트 출력
         if (getline(&cmdline, &len, stdin) == -1) { // getline()으로 명령어 읽기
             break; // 널 체크 (EOF)
         }
-
         if (cmdline[strlen(cmdline) - 1] == '\n') {
             cmdline[strlen(cmdline) - 1] = '\0'; // 마지막 자리 개행 문자 제거 & 널 값 삽입
         }
-
         if (strcmp(cmdline, "exit") == 0) {
-            break; // exit 입력 시 루프 종료
+            exit(0); // exit 입력 시 종료
         }
 
-        process_input(cmdline, argv, &background, &input_file, &output_file, &error_file); // 입력 처리 및 명령어 파싱
+            process_input(cmdline, argv, &background, &input_file, &output_file, &error_file); // 입력 처리 및 명령어 파싱
 
         if (argv[0] == NULL) {
             continue; // 입력된 명령어 없을 시 계속 반복

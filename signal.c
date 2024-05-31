@@ -2,7 +2,7 @@
 
 void handle_signal(int sig) {
     if (sig == SIGINT) {
-        printf("\nType 'exit' to quit the shell.\n");
+        printf("\n종료하려면 'exit'를 입력하세요\n");
     }
 }
 

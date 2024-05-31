@@ -15,13 +15,13 @@ void execute_command(char **argv, int background, char *input_file, char *output
         }
     }
 
-    pid_t pid = fork();
-    if (pid == 0) {
+    pid_t pid = fork();         //자식 프로세스 생성
+    if (pid == 0) {             //자식프로세스이면
         redirect_io(input_file, output_file, error_file);
         execvp(argv[0], argv); // 명령어 실행
         perror(argv[0]); // 실패 시 에러 메시지 출력
         exit(1);
-    } else if (pid > 0) {
+    } else if (pid > 0) {           //부모프로세스이면
         if (background == BACKGROUND) {
             printf("[Process id %d]\n", pid); // bg 실행 시 자식 프로세스 ID 출력
         } else {
